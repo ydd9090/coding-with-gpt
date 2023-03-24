@@ -1,0 +1,27 @@
+#!/bin/bash
+[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
+if [ -z "$1" ];then
+    code 
+fi
+if [ -f "$1" ];then
+    code "$1"
+fi
+if [ -d "$1" ];then
+    if [ -f "$1/go.mod" ];then
+        go_version=$(awk '/^go / {print $2}' "$1/go.mod")
+        echo "打开的是一个go项目，go版本为${go_version}"
+        if [[ "$go_version" == "1.19" ]];then
+            gvm use go1.19.1
+            code "$1"
+        elif [[ "$go_version" == "1.16" ]];then
+            gvm use go1.16.1
+            code "$1"
+        fi
+    fi
+fi
+
+
+##############################################################
+#   添加软链到/usr/local/bin                                   #
+#   sudo ln -s /Users/xxx/xxx/zcode /usr/local/bin/zcode     #
+##############################################################
