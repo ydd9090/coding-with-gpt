@@ -8,13 +8,8 @@ elif [ -d "$1" ];then
     if [ -f "$1/go.mod" ];then
         go_version=$(awk '/^go / {print $2}' "$1/go.mod")
         echo "打开的是一个go项目，go版本为${go_version}"
-        if [[ "$go_version" == "1.19" ]];then
-            gvm use go1.19.1
-            code "$1"
-        elif [[ "$go_version" == "1.16" ]];then
-            gvm use go1.16.1
-            code "$1"
-        fi
+        gvm use go${go_version}
+        code "$1"
     else
         code "$1"
     fi
