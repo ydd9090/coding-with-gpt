@@ -13,6 +13,18 @@ type TestFile struct{
 	AbsPath string
 }
 
+func NewTestFile(fileName string, searchPath string) *TestFile{
+	//searchPath是否是一个文件目录
+	if info,err := os.Stat(searchPath); err != nil || !info.IsDir(){
+		fmt.Println("searchPath is not a directory")
+		return nil
+	}
+	return &TestFile{
+		FileName: fileName,
+		SearchPath: searchPath,
+	}
+}
+
 //检查文件是否存在
 func (t *TestFile) IsExist() bool{
 	err := filepath.Walk(t.SearchPath, func(path string, info os.FileInfo, err error) error {

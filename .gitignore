@@ -1,2 +1,8 @@
 env.json
 temp/
+
+venv/
+*.log
+internallib/
+
+*.db
