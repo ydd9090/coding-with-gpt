@@ -1,0 +1,6 @@
+flask
+flask-sqlalchemy
+bootstrap-flask
+python-dotenv
+flask-wtf
+flask-login

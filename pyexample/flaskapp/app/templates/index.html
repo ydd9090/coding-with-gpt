@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+
+
+{% block head %}
+    {{ super() }}
+    <title>Flask App</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Flask App</h1>
+    <p>Flask App is a simple Flask application.</p>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        console.log("Hello World!");
+    </script>
+{% endblock %}

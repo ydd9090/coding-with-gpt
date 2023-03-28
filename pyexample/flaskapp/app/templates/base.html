@@ -1,0 +1,48 @@
+{% from 'bootstrap5/nav.html' import render_nav_item %}
+<!-- 
+URL: https://bootstrap-flask.readthedocs.io/en/stable/migrate/
+Create Base Template
+In Flask-Bootstrap, there is a built-in base template called bootstrap/base.html. 
+This extension does not provide one. You have to create it by yourself; 
+an example starter is given here: -->
+
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        {% block styles %}
+            <!-- Bootstrap CSS -->
+            {{ bootstrap.load_css() }}
+        {% endblock %}
+
+        <title>Your page title</title>
+        {% endblock %}
+    </head>
+    <body>
+        <!-- 
+            导航栏URL: https://bootstrap-flask.readthedocs.io/en/stable/macros/#render-nav-item
+            
+         -->
+        {% block navbar %}
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="navbar-nav mr-auto">
+                    {{ render_nav_item('index', 'Home') }}
+                    {{ render_nav_item('account', 'Account') }}
+                </div>
+            </nav>
+        {% endblock %}
+        <!-- Your page content -->
+        {% block content %}{% endblock %}
+
+        {% block scripts %}
+            <!-- Optional JavaScript -->
+            {{ bootstrap.load_js() }}
+        {% endblock %}
+    </body>
+</html>
+
