@@ -1,0 +1,46 @@
+{%extends "base.html"%}
+{%from "bootstrap5/form.html" import render_form%}
+
+{%block styles%}
+{{super()}}
+
+{%endblock%}
+
+
+
+{%block content%}
+    <h1>Account</h1>
+    <p>Submit your api request.</p>
+    {{render_form(form)}}
+    {%if original_json is none %}
+    <p>没有需要diff的数据</p>
+    {%else%}
+      <div id="diff-container" style="width: 1200px; height: 600px; border: 1px solid grey"></div>
+    {%endif%}
+    <div id="original" hidden>{{original_json}}</div>
+    <div id="modified" hidden>{{modified_json}}</div>
+    
+{%endblock%}
+
+{%block scripts%}
+{{super()}}
+
+
+		<script src="{{url_for('static',filename='monaco-editor/min/vs/loader.js')}}"></script>
+
+        <script>
+			require.config({ paths: { vs: 'static/monaco-editor/min/vs' } });
+
+			require(['vs/editor/editor.main'], function () {
+				var diffEditor = monaco.editor.createDiffEditor(document.getElementById('diff-container'));
+                original_json = document.getElementById('original').innerText;
+                modified_json = document.getElementById('modified').innerText;
+                console.log(original_json);
+                console.log(modified_json);
+					diffEditor.setModel({
+						original: monaco.editor.createModel(original_json, 'json'),
+						modified: monaco.editor.createModel(modified_json, 'json')
+				});
+			});
+		</script>
+{%endblock%}

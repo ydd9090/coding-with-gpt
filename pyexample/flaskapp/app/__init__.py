@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 import click
@@ -8,7 +9,7 @@ from flask_login import current_user
 from flask_sqlalchemy import get_debug_queries
 from flask_wtf.csrf import CSRFError
 from .settings import config
-from .extensions import db,bootstrap5
+from .extensions import db,bootstrap5,codemirror
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -50,6 +51,7 @@ def register_logging(app):
 def register_extensions(app):
     bootstrap5.init_app(app)
     db.init_app(app)
+    codemirror.init_app(app)
 
 
 def register_blueprints(app):
@@ -119,6 +121,15 @@ def register_commands(app):
 
 
 def register_request_handlers(app):
+    @app.before_request
+    def start_timer():
+        request.start_time = time.time()
+
+    @app.after_request
+    def stop_timer(response):
+        app.logger.info('Request: %s; Time: %fs' % (request.url, time.time() - request.start_time))
+        return response
+
     @app.after_request
     def query_profiler(response):
         for q in get_debug_queries():
