@@ -11,6 +11,7 @@ from flask_wtf.csrf import CSRFError
 from .settings import config
 from .extensions import db,bootstrap5,codemirror
 
+
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
@@ -153,4 +154,7 @@ register_shell_context(app)
 register_template_context(app)
 register_request_handlers(app)
 
+
 from . import views
+from app.blueprints.bytest_template import bytest_bp
+app.register_blueprint(bytest_bp,url_prefix='/bytest')

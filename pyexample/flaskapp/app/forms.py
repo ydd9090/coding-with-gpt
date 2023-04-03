@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Regexp
-from wtforms.fields import StringField,SubmitField,SelectField,TextAreaField
+from wtforms.fields import StringField,SubmitField,SelectField,TextAreaField,IntegerField
 from wtforms import ValidationError
 from .models import Account
-from flask_codemirror.fields import CodeMirrorField
 from flask import current_app
 import json
 
@@ -39,3 +38,11 @@ class DiffForm(FlaskForm):
                 json.loads(field.data)
             except Exception as e:
                 raise ValidationError("Bytediff数据格式校验错误:{}".format(e))
+            
+
+class BytestTemplateForm(FlaskForm):
+    bytest_template_id = IntegerField("Bytest template id",validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+
+

@@ -34,6 +34,12 @@ def account_edit(id):
 def account_delete(id):
     pass
 
+
+@app.route('/task')
+def task():
+    return render_template('task.html')
+
+
 @app.route('/diff',methods=['GET','POST'])
 def diff():
     form = DiffForm()
