@@ -1,6 +1,7 @@
 from .extensions import db
 from datetime import datetime
 from app.internallib.clients.bytest_client import BytestClient
+from app.internallib.clients.account_manage_client import AccountManageClient
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,9 +10,12 @@ class Account(db.Model):
     session_id = db.Column(db.String(256))
     create_at = db.Column(db.DateTime, default=datetime.now)
     modify_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    uuid = db.Column(db.String(36))
+    uid = db.Column(db.String(36))
     userid_type = db.Column(db.Integer)
 
+    def __init__(self,*args,**kwargs) -> None:
+        super().__init__(*args,**kwargs)
+        self._api_client = AccountManageClient()
 
     def set_session_id(self):
         raise NotImplementedError
@@ -20,13 +24,18 @@ class Account(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def get_uid(self):
+        if not self.uid:
+            resp = self.apiclient.get_uid(self.phone_num)
+            self.uid = str(resp.json().get('data').get(self.phone_num))
+        return self.uid
+
     def get_sec_uuid(self):
         raise NotImplementedError
     
-
     @property
     def apiclient(self):
-        raise NotImplementedError
+        return self._api_client
     
 class BytestTemplate(db.Model):
     id = db.Column(db.Integer,primary_key=True)
@@ -51,6 +60,7 @@ class BytestTemplate(db.Model):
         if self.biz is None or self.bytest_template_id is None:
             raise ValueError("biz or bytest_template_id should not be None")
         self.url = "https://bytest.bytedance.net/next/projects/{}/tests/{}/tasks".format(self.biz,self.bytest_template_id)
+        return self.url
 
     def get_task_list(self):
         resp = self.bytest_client.task_list(self.bytest_template_id,self.biz)
@@ -102,3 +112,4 @@ class Request(db.Model):
     case_id = db.Column(db.Integer,db.ForeignKey("case.id"))
     case = db.relationship("Case",back_populates="requests")
     
+
