@@ -3,25 +3,48 @@
 # 获取当前脚本所在目录
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
+function get_release_branch {
+    git fetch --all
+    release_branch=`git branch -r --sort=-committerdate | grep -E "release_train_[0-9]+$" | head -1`
+}
+
+function init_go_env {
+
+    go_version=$(awk '/^go / {print $2}' "$1/go.mod")
+    echo "打开的是一个go项目，go版本为${go_version}"
+    gvm use go${go_version}
+    echo "设置CONSUL_HTTP_HOST"
+    devbox_ip=$(cat ${SCRIPT_DIR}/env.json | jq -r '.devbox_ip')
+    export CONSUL_HTTP_HOST=${devbox_ip}
+
+}
+
 # 加载gvm
 [[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
-if [ -z "$1" ];then
+
+if [ $# -eq 2 ] && [ "$2" = "with-release" ];then
+    cd $1
+    get_release_branch
+    local_branch=${release_branch#*/}
+    git checkout -b $local_branch $release_branch   # TODO：判断当前是否已经创建该本地分支，且是否已在改本地分支上 
+    echo "切换到release分支:${local_branch}"
+    init_go_env .
+    code .
+
+elif [ -z "$1" ];then
     code 
 elif [ -f "$1" ];then
     code "$1"
 elif [ -d "$1" ];then
     if [ -f "$1/go.mod" ];then
-        go_version=$(awk '/^go / {print $2}' "$1/go.mod")
-        echo "打开的是一个go项目，go版本为${go_version}"
-        gvm use go${go_version}
-        echo "设置CONSUL_HTTP_HOST"
-        devbox_ip=$(cat ${SCRIPT_DIR}/env.json | jq -r '.devbox_ip')
-        export CONSUL_HTTP_HOST=${devbox_ip}
+        init_go_env $1
         code "$1"
     else
         code "$1"
     fi
 fi
+
+
 
 
 ##############################################################
